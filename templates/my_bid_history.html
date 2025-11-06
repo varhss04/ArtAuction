@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %}My Bid History - Artemis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .bids-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .bid-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: grid;
+        grid-template-columns: 120px 1fr auto;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .bid-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .bid-info h3 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .bid-info p {
+        color: var(--light-text);
+        margin: 0.25rem 0;
+    }
+
+    .bid-amount {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--success-color);
+    }
+
+    .no-bids {
+        text-align: center;
+        padding: 4rem;
+        background: white;
+        border-radius: 12px;
+    }
+
+    .no-bids i {
+        font-size: 4rem;
+        color: var(--border-color);
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bids-container">
+    <h1 class="page-header">My Bid History</h1>
+
+    {% if bids %}
+        {% for bid in bids %}
+        <div class="bid-card">
+            <img src="{{ url_for('static', filename=bid.image_url) }}" alt="{{ bid.title }}" class="bid-image" onerror="this.src='https://placehold.co/120x120/ecf0f1/2c3e50?text=Art'">
+            
+            <div class="bid-info">
+                <h3>{{ bid.title }}</h3>
+                <p><strong>Lot Status:</strong> {{ bid.lot_status | capitalize }}</p>
+                <p><strong>Bid Date:</strong> {{ bid.bid_timestamp.strftime('%B %d, %Y at %I:%M %p') }}</p>
+            </div>
+
+            <div class="bid-amount">
+                ${{ "%.2f"|format(bid.bid_amount) }}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-bids">
+            <i class="fas fa-gavel"></i>
+            <h2>No Bids Yet</h2>
+            <p>You haven't placed any bids. <a href="{{ url_for('auctions') }}">Browse auctions</a> to get started!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

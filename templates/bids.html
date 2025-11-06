@@ -1,0 +1,146 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ auction.name }} - Artemis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auction-header {
+        background: linear-gradient(135deg, var(--primary-color), #34495e);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .auction-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .lots-grid {
+        display: grid;
+        gap: 2rem;
+    }
+
+    .lot-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+    }
+
+    .lot-image {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    .lot-content {
+        padding: 2rem;
+    }
+
+    .lot-content h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .artist-name {
+        color: var(--light-text);
+        margin-bottom: 1rem;
+    }
+
+    .current-bid {
+        font-size: 1.5rem;
+        color: var(--success-color);
+        font-weight: 700;
+        margin: 1rem 0;
+    }
+
+    .bid-form {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .bid-input {
+        flex: 1;
+        padding: 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    .btn {
+        background: var(--success-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn:hover {
+        background: #229954;
+        transform: translateY(-2px);
+    }
+
+    .no-lots {
+        text-align: center;
+        padding: 4rem;
+        background: white;
+        border-radius: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auction-header">
+    <h1>{{ auction.name }}</h1>
+    <p>Status: {{ auction.status | capitalize }}</p>
+</div>
+
+{% if lots %}
+    <div class="lots-grid">
+        {% for lot in lots %}
+        <div class="lot-card">
+            <img src="{{ url_for('static', filename=lot.image_url) }}" alt="{{ lot.title }}" class="lot-image" onerror="this.src='https://placehold.co/300x300/ecf0f1/2c3e50?text=Artwork'">
+            
+            <div class="lot-content">
+                <h3>{{ lot.title }}</h3>
+                <p class="artist-name">by {{ lot.artist_name }}</p>
+                <p>{{ lot.description }}</p>
+                
+                <div class="current-bid">
+                    Current Bid: ${{ "%.2f"|format(lot.highest_bid) }}
+                </div>
+
+                {% if auction.status == 'active' %}
+                <form method="POST" action="{{ url_for('place_bid') }}" class="bid-form">
+                    <input type="hidden" name="lot_id" value="{{ lot.lot_id }}">
+                    <input type="hidden" name="auction_id" value="{{ auction_id }}">
+                    <input type="number" name="amount" class="bid-input" 
+                           placeholder="Enter your bid" 
+                           min="{{ lot.highest_bid + 1 }}" 
+                           step="1.00" required>
+                    <button type="submit" class="btn">Place Bid</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="no-lots">
+        <h2>No Lots Available</h2>
+        <p>This auction has no items yet.</p>
+    </div>
+{% endif %}
+{% endblock %}

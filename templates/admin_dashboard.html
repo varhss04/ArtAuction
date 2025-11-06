@@ -1,0 +1,234 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin Dashboard - Artemis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+        text-align: center;
+    }
+    
+    .page-subheader {
+        font-size: 1.2rem;
+        color: var(--light-text);
+        margin-bottom: 2.5rem;
+        text-align: center;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .stat-card-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #34495e 100%);
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .stat-card-header i {
+        font-size: 2.5rem;
+        opacity: 0.8;
+    }
+    
+    .stat-card-header .stat-info {
+        flex: 1;
+    }
+    
+    .stat-card-header .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-card-header .stat-value {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .quick-actions {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 2rem;
+    }
+
+    .quick-actions h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background: var(--primary-color);
+        color: white;
+        padding: 1rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        background: #34495e;
+        transform: translateY(-2px);
+    }
+    
+    .btn-accent {
+        background: var(--accent-color);
+    }
+    
+    .btn-accent:hover {
+        background: #2980b9;
+    }
+    
+    .btn-secondary {
+        background: var(--secondary-color);
+    }
+    
+    .btn-secondary:hover {
+        background: #c0392b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-header">Admin Dashboard</h1>
+<p class="page-subheader">System Overview & Quick Actions</p>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <i class="fas fa-users"></i>
+            <div class="stat-info">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value">{{ stats.total_users }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <i class="fas fa-palette"></i>
+            <div class="stat-info">
+                <div class="stat-label">Pending Artworks</div>
+                <div class="stat-value">{{ stats.pending_artworks }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <i class="fas fa-gavel"></i>
+            <div class="stat-info">
+                <div class="stat-label">Active Auctions</div>
+                <div class="stat-value">{{ stats.active_auctions }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stats-grid">
+    {% if top_sellers %}
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <i class="fas fa-trophy"></i>
+            <div class="stat-info">
+                <div class="stat-label">Top Sellers</div>
+            </div>
+        </div>
+        <div style="padding: 1rem;">
+            {% for seller in top_sellers %}
+            <p>{{ seller.username }}: ${{ "%.2f"|format(seller.total_sales) }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if competitive_lots %}
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <i class="fas fa-fire"></i>
+            <div class="stat-info">
+                <div class="stat-label">Competitive Lots</div>
+            </div>
+        </div>
+        <div style="padding: 1rem;">
+            {% for lot in competitive_lots %}
+            <p>{{ lot.title }} ({{ lot.total_bids }} bids)</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if auction_winners %}
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <i class="fas fa-medal"></i>
+            <div class="stat-info">
+                <div class="stat-label">Recent Winners</div>
+            </div>
+        </div>
+        <div style="padding: 1rem;">
+            {% for winner in auction_winners %}
+            <p>{{ winner.winner }}: ${{ "%.2f"|format(winner.amount) }} ({{ winner.auction_name }})</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="quick-actions">
+    <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+    <div class="action-buttons">
+        <a href="{{ url_for('admin_manage_auctions') }}" class="btn btn-accent">
+            <i class="fas fa-landmark"></i>
+            Manage Auctions
+        </a>
+        <a href="{{ url_for('admin_manage_users') }}" class="btn btn-secondary">
+            <i class="fas fa-users-cog"></i>
+            Manage Users
+        </a>
+    </div>
+</div>
+{% endblock %}

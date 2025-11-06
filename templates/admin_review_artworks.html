@@ -1,0 +1,170 @@
+{% extends "layout.html" %}
+
+{% block title %}Review Artworks - Artemis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        color: var(--primary-color);
+    }
+
+    .artworks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .artwork-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: transform 0.3s;
+    }
+
+    .artwork-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .artwork-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .artwork-details {
+        padding: 1.5rem;
+    }
+
+    .artwork-details h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .artwork-details p {
+        color: var(--light-text);
+        margin: 0.25rem 0;
+        font-size: 0.9rem;
+    }
+
+    .artwork-details .description {
+        margin: 1rem 0;
+        color: var(--dark-text);
+        line-height: 1.5;
+    }
+
+    .assign-form {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .assign-form select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        margin-bottom: 0.75rem;
+    }
+
+    .btn {
+        display: block;
+        width: 100%;
+        background: var(--accent-color);
+        color: white;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn:hover {
+        background: #2980b9;
+    }
+
+    .no-artworks {
+        text-align: center;
+        padding: 4rem;
+        background: white;
+        border-radius: 12px;
+    }
+
+    .no-artworks i {
+        font-size: 4rem;
+        color: var(--border-color);
+        margin-bottom: 1rem;
+    }
+
+    .seller-info {
+        background: var(--light-bg);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-header">Review Pending Artworks</h1>
+
+{% if artworks %}
+    <div class="artworks-grid">
+        {% for artwork in artworks %}
+        <div class="artwork-card">
+            <img src="{{ url_for('static', filename=artwork.image_url) }}" alt="{{ artwork.title }}" class="artwork-image" onerror="this.src='https://placehold.co/350x250/ecf0f1/2c3e50?text={{ artwork.title }}'">
+            
+            <div class="artwork-details">
+                <h3>{{ artwork.title }}</h3>
+                <p><strong>Artist:</strong> {{ artwork.artist_name }}</p>
+                <p><strong>Category:</strong> {{ artwork.category | capitalize }}</p>
+                {% if artwork.year %}
+                <p><strong>Year:</strong> {{ artwork.year }}</p>
+                {% endif %}
+                
+                {% if artwork.description %}
+                <p class="description">{{ artwork.description }}</p>
+                {% endif %}
+                
+                <div class="seller-info">
+                    <i class="fas fa-user"></i> Seller: {{ artwork.seller_name }}
+                    <br>
+                    <i class="fas fa-calendar"></i> Listed: {{ artwork.created_at.strftime('%B %d, %Y') }}
+                </div>
+
+                <form method="POST" action="{{ url_for('admin_assign_to_auction') }}" class="assign-form">
+                    <input type="hidden" name="artwork_id" value="{{ artwork.id }}">
+                    <label for="auction-{{ artwork.id }}" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">
+                        Assign to Auction:
+                    </label>
+                    <select name="auction_id" id="auction-{{ artwork.id }}" required>
+                        <option value="">Select an auction...</option>
+                        {% for auction in auctions %}
+                        <option value="{{ auction.id }}">{{ auction.name }} ({{ auction.status }})</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-plus-circle"></i> Assign to Auction
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="no-artworks">
+        <i class="fas fa-check-circle"></i>
+        <h2>No Pending Artworks</h2>
+        <p>All submitted artworks have been reviewed and assigned to auctions.</p>
+    </div>
+{% endif %}
+{% endblock %}

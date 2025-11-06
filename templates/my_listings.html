@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+
+{% block title %}My Listings - Artemis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .listings-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .listing-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        gap: 2rem;
+    }
+
+    .listing-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .listing-info h3 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .listing-info p {
+        color: var(--light-text);
+        margin: 0.25rem 0;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        margin-top: 1rem;
+    }
+
+    .status-active {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-sold {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-unsold {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .no-listings {
+        text-align: center;
+        padding: 4rem;
+        background: white;
+        border-radius: 12px;
+    }
+
+    .no-listings i {
+        font-size: 4rem;
+        color: var(--border-color);
+        margin-bottom: 1rem;
+    }
+
+    .btn {
+        display: inline-block;
+        background: var(--secondary-color);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="listings-container">
+    <h1 class="page-header">My Art Listings</h1>
+
+    {% if listings %}
+        {% for item in listings %}
+        <div class="listing-card">
+            <img src="{{ url_for('static', filename=item.image_url) }}" alt="{{ item.title }}" class="listing-image" onerror="this.src='https://placehold.co/150x150/ecf0f1/2c3e50?text=Art'">
+            
+            <div class="listing-info">
+                <h3>{{ item.title }}</h3>
+                <p><strong>Artist:</strong> {{ item.artist_name }}</p>
+                <p><strong>Category:</strong> {{ item.category | capitalize }}</p>
+                <p><strong>Listed:</strong> {{ item.created_at.strftime('%B %d, %Y') }}</p>
+                
+                {% if item.lot_status == 'sold' %}
+                    <span class="status-badge status-sold"><i class="fas fa-check-circle"></i> Sold</span>
+                {% elif item.lot_status == 'open' and item.auction_status == 'active' %}
+                    <span class="status-badge status-active"><i class="fas fa-gavel"></i> Live in Auction: {{ item.auction_name }}</span>
+                {% elif item.lot_status == 'open' and item.auction_status == 'upcoming' %}
+                    <span class="status-badge status-pending"><i class="fas fa-calendar"></i> Scheduled for: {{ item.auction_name }}</span>
+                {% elif item.lot_status == 'unsold' %}
+                    <span class="status-badge status-unsold"><i class="fas fa-times-circle"></i> Unsold</span>
+                {% else %}
+                    <span class="status-badge status-pending"><i class="fas fa-clock"></i> Pending Admin Review</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-listings">
+            <i class="fas fa-palette"></i>
+            <h2>No Listings Yet</h2>
+            <p>You haven't listed any items for auction.</p>
+            <a href="{{ url_for('sell_item') }}" class="btn">List Your First Item</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

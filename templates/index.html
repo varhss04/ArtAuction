@@ -1,0 +1,195 @@
+{% extends "layout.html" %}
+
+{% block title %}Artemis - Premier Art Auction Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+        padding: 3rem 0;
+    }
+
+    .hero-content h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .hero-content p {
+        font-size: 1.2rem;
+        color: var(--light-text);
+        margin-bottom: 2rem;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn {
+        padding: 1rem 2rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: var(--secondary-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background: var(--accent-color);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+    }
+
+    .hero-image img {
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .features {
+        padding: 4rem 0;
+        background: white;
+        margin: 3rem -2rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    .features h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+        border-radius: 8px;
+        transition: transform 0.3s;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-card i {
+        font-size: 3rem;
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        margin-bottom: 0.5rem;
+    }
+
+    .cta {
+        text-align: center;
+        padding: 4rem 0;
+    }
+
+    .cta h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .cta p {
+        font-size: 1.2rem;
+        color: var(--light-text);
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Welcome to Artemis</h1>
+        <p>Discover and bid on exceptional artworks from talented artists worldwide. Join our premier art auction platform today.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('auctions') }}" class="btn btn-primary">Browse Auctions</a>
+            <a href="{{ url_for('register') }}" class="btn btn-secondary">Join Now</a>
+        </div>
+    </div>
+    <div class="hero-image">
+        <img src="{{ url_for('static', filename='bgpic.jpeg') }}" alt="Art Gallery" onerror="this.style.display='none'">
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2>Why Choose Artemis?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-gavel"></i>
+                <h3>Live Auctions</h3>
+                <p>Participate in real-time auctions with bidding from around the world.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Secure Platform</h3>
+                <p>Your transactions and personal information are fully protected.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-palette"></i>
+                <h3>Diverse Artworks</h3>
+                <p>Explore a wide range of art categories from emerging and established artists.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-users"></i>
+                <h3>Community</h3>
+                <p>Join a vibrant community of art enthusiasts and collectors.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2>Top Sellers</h2>
+        {% if top_sellers %}
+        <div class="features-grid">
+            {% for seller in top_sellers %}
+            <div class="feature-card">
+                <i class="fas fa-trophy"></i>
+                <h3>{{ seller.username }}</h3>
+                <p>Total Sales: ${{ "%.2f"|format(seller.total_sales) }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>No sales data available yet.</p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="cta">
+    <h2>Ready to Start Bidding?</h2>
+    <p>Create your account today and dive into the world of art auctions.</p>
+    <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+</section>
+{% endblock %}

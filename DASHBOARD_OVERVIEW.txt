@@ -1,0 +1,86 @@
+╔═══════════════════════════════════════════════════════════════════════╗
+║          ART GALLERY AUCTION SYSTEM - DASHBOARD OVERVIEW              ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+┌───────────────────────────────────────────────────────────────────────┐
+│  PUBLIC USERS (Not Logged In)                                         │
+├───────────────────────────────────────────────────────────────────────┤
+│  ✓ Index Page - Hero section with features                           │
+│  ✓ Register - Create account (choose role)                           │
+│  ✓ Login - Access your account                                       │
+└───────────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────────┐
+│  BIDDER DASHBOARD - 3 CARDS                                           │
+├───────────────────────────────────────────────────────────────────────┤
+│                                                                        │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐      │
+│  │  1. Browse      │  │  2. My Bid      │  │  3. My          │      │
+│  │     Auctions    │  │     History     │  │     Winnings    │      │
+│  ├─────────────────┤  ├─────────────────┤  ├─────────────────┤      │
+│  │ View active     │  │ Track all bids  │  │ View won items  │      │
+│  │ auctions & bid  │  │ placed          │  │ & pay           │      │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘      │
+│                                                                        │
+│  Connected to DB Tables: auctions, lots, bids, payments               │
+└───────────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────────┐
+│  SELLER DASHBOARD - 2 CARDS (Seller Tools Only)                       │
+├───────────────────────────────────────────────────────────────────────┤
+│                                                                        │
+│  ┌─────────────────┐  ┌─────────────────┐                            │
+│  │  1. Sell New    │  │  2. My          │                            │
+│  │     Artwork     │  │     Listings    │                            │
+│  ├─────────────────┤  ├─────────────────┤                            │
+│  │ Create artwork  │  │ Track artwork   │                            │
+│  │ listings        │  │ status          │                            │
+│  └─────────────────┘  └─────────────────┘                            │
+│                                                                        │
+│  Connected to DB Tables: artworks, artists, lot_artworks              │
+└───────────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────────┐
+│  ADMIN DASHBOARD - 3 CARDS (Admin Tools Only)                         │
+├───────────────────────────────────────────────────────────────────────┤
+│                                                                        │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐      │
+│  │  1. Admin       │  │  2. Manage      │  │  3. Manage      │      │
+│  │     Dashboard   │  │     Auctions    │  │     Users       │      │
+│  ├─────────────────┤  ├─────────────────┤  ├─────────────────┤      │
+│  │ System stats:   │  │ Create auctions │  │ View all users  │      │
+│  │ - Total users   │  │ Add to lots     │  │ Update roles    │      │
+│  │ - Pending items │  │ Start/close     │  │ Manage access   │      │
+│  │ - Active aucts  │  │                 │  │                 │      │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘      │
+│                                                                        │
+│  Full DB Access: All tables, procedures, triggers                     │
+└───────────────────────────────────────────────────────────────────────┘
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║  DATABASE VERIFICATION                                                ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║  ✓ Tables: users, artists, artworks, auctions, lots, bids, payments  ║
+║  ✓ Procedures: RegisterUser, PlaceBid, CreateArtwork, CreateAuction  ║
+║  ✓ Triggers: Bid validation, payment auto-creation, lot status       ║
+║  ✓ Functions: GetHighestBid, SellerTotalSales, UserBidCount          ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║  ROLE SEPARATION ENFORCED!                                            ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║  • Bidders see ONLY 3 bidder cards                                    ║
+║  • Sellers see ONLY 2 seller cards                                    ║
+║  • Admins see ONLY 3 admin cards                                      ║
+║                                                                        ║
+║  Each role has distinct, separate functionality!                      ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║  TEST IT NOW!                                                         ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║  1. Run: python app.py                                                ║
+║  2. Visit: http://127.0.0.1:5000                                      ║
+║  3. Login: admin@gallery.com / admin123                               ║
+║  4. See 3 admin cards on your dashboard!                              ║
+╚═══════════════════════════════════════════════════════════════════════╝

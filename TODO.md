@@ -1,0 +1,4 @@
+- [x] Center login boxes on login and register pages by adjusting CSS for full viewport centering
+  - [x] Edit templates/login.html: Update .form-container min-height and add main overrides in extra_css
+  - [x] Edit templates/register.html: Update .form-container min-height and add main overrides in extra_css
+- [ ] Test the changes by running the app and checking login/register pages

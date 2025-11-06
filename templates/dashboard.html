@@ -1,0 +1,226 @@
+{% extends "layout.html" %}
+
+{% block title %}Your Dashboard - Artemis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+    
+    .page-subheader {
+        font-size: 1.2rem;
+        color: var(--light-text);
+        margin-bottom: 2.5rem;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .dash-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+    }
+    
+    .dash-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .dash-card-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #34495e 100%);
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .dash-card-header i {
+        font-size: 1.5rem;
+        opacity: 0.8;
+    }
+    
+    .dash-card-header h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+        margin: 0;
+    }
+
+    .dash-card-body {
+        padding: 2rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .dash-card-body p {
+        color: var(--light-text);
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .btn {
+        display: inline-block;
+        background: var(--primary-color);
+        color: white;
+        padding: 0.85rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-block {
+        width: 100%;
+    }
+    
+    .btn-accent {
+        background: var(--accent-color);
+    }
+    .btn-accent:hover {
+        background: #2980b9;
+    }
+    
+    .btn-secondary {
+        background: var(--secondary-color);
+    }
+    .btn-secondary:hover {
+        background: #c0392b;
+    }
+
+    .role-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        margin-top: 2.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-header">Welcome, {{ session.username }}!</h1>
+<p class="page-subheader">Manage your account, view your bids, and list your items for sale.</p>
+
+{% if session['user_role'] == 'bidder' %}
+<h2 class="role-header">Bidder Tools</h2>
+<div class="dashboard-grid">
+    <div class="dash-card">
+        <div class="dash-card-header">
+            <i class="fas fa-gavel"></i>
+            <h3>Browse Auctions</h3>
+        </div>
+        <div class="dash-card-body">
+            <p>View all currently active auctions and place bids on items you love.</p>
+            <a href="{{ url_for('auctions') }}" class="btn btn-accent btn-block">View Active Auctions</a>
+        </div>
+    </div>
+
+    <div class="dash-card">
+        <div class="dash-card-header">
+            <i class="fas fa-history"></i>
+            <h3>My Bid History</h3>
+        </div>
+        <div class="dash-card-body">
+            <p>Track all the bids you've placed across different auctions.</p>
+            <a href="{{ url_for('my_bid_history') }}" class="btn btn-accent btn-block">View My Bids</a>
+        </div>
+    </div>
+
+    <div class="dash-card">
+        <div class="dash-card-header">
+            <i class="fas fa-trophy"></i>
+            <h3>My Winnings</h3>
+        </div>
+        <div class="dash-card-body">
+            <p>View all the items you've won and complete your payments.</p>
+            <a href="{{ url_for('my_winnings') }}" class="btn btn-accent btn-block">View Winnings</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if session['user_role'] == 'seller' %}
+<h2 class="role-header">Seller Tools</h2>
+<div class="dashboard-grid">
+    <div class="dash-card">
+        <div class="dash-card-header">
+            <i class="fas fa-plus-circle"></i>
+            <h3>Sell New Artwork</h3>
+        </div>
+        <div class="dash-card-body">
+            <p>Add a new piece of artwork to our gallery to be auctioned.</p>
+            <a href="{{ url_for('sell_item') }}" class="btn btn-secondary btn-block">Create Listing</a>
+        </div>
+    </div>
+
+    <div class="dash-card">
+        <div class="dash-card-header">
+            <i class="fas fa-list-ul"></i>
+            <h3>My Listings</h3>
+        </div>
+        <div class="dash-card-body">
+            <p>See all your artworks and their current auction status.</p>
+            <a href="{{ url_for('my_listings') }}" class="btn btn-secondary btn-block">View My Listings</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if session['user_role'] == 'admin' %}
+<h2 class="role-header">Admin Panel</h2>
+<div class="dashboard-grid">
+    <div class="dash-card">
+        <div class="dash-card-header">
+            <i class="fas fa-chart-line"></i>
+            <h3>Admin Dashboard</h3>
+        </div>
+        <div class="dash-card-body">
+            <p>View system statistics including total users, artworks, and active auctions.</p>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary btn-block">View Dashboard</a>
+        </div>
+    </div>
+
+    <div class="dash-card">
+        <div class="dash-card-header">
+            <i class="fas fa-landmark"></i>
+            <h3>Manage Auctions</h3>
+        </div>
+        <div class="dash-card-body">
+            <p>Create new auctions, add artworks to lots, and start/close auctions.</p>
+            <a href="{{ url_for('admin_manage_auctions') }}" class="btn btn-secondary btn-block">Manage Auctions</a>
+        </div>
+    </div>
+
+    <div class="dash-card">
+        <div class="dash-card-header">
+            <i class="fas fa-users-cog"></i>
+            <h3>Manage Users</h3>
+        </div>
+        <div class="dash-card-body">
+            <p>View all users, update roles, and manage site access.</p>
+            <a href="{{ url_for('admin_manage_users') }}" class="btn btn-secondary btn-block">Manage Users</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

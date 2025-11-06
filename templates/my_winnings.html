@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+
+{% block title %}My Winnings - Artemis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .winnings-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .winning-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: grid;
+        grid-template-columns: 150px 1fr auto;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .winning-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .winning-info h3 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .winning-info p {
+        color: var(--light-text);
+        margin: 0.25rem 0;
+    }
+
+    .winning-amount {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--success-color);
+        margin-bottom: 1rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .btn {
+        background: var(--success-color);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn:hover {
+        background: #229954;
+        transform: translateY(-2px);
+    }
+
+    .no-winnings {
+        text-align: center;
+        padding: 4rem;
+        background: white;
+        border-radius: 12px;
+    }
+
+    .no-winnings i {
+        font-size: 4rem;
+        color: var(--border-color);
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="winnings-container">
+    <h1 class="page-header">My Winnings</h1>
+
+    {% if winnings %}
+        {% for item in winnings %}
+        <div class="winning-card">
+            <img src="{{ url_for('static', filename=item.image_url) }}" alt="{{ item.title }}" class="winning-image" onerror="this.src='https://placehold.co/150x150/ecf0f1/2c3e50?text=Art'">
+            
+            <div class="winning-info">
+                <h3>{{ item.title }}</h3>
+                <p><strong>Artist:</strong> {{ item.artist_name }}</p>
+                <p><strong>Lot:</strong> #{{ item.lot_number }}</p>
+                <span class="status-badge status-{{ item.status }}">{{ item.status | capitalize }}</span>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="winning-amount">${{ "%.2f"|format(item.amount) }}</div>
+                {% if item.status == 'pending' %}
+                    <a href="{{ url_for('payment_page', payment_id=item.payment_id) }}" class="btn">Pay Now</a>
+                {% elif item.status == 'completed' %}
+                    <a href="{{ url_for('receipt_page', payment_id=item.payment_id) }}" class="btn" style="background: var(--accent-color);">View Receipt</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-winnings">
+            <i class="fas fa-trophy"></i>
+            <h2>No Winnings Yet</h2>
+            <p>You haven't won any auctions yet. Keep bidding!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

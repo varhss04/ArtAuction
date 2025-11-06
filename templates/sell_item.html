@@ -1,0 +1,143 @@
+{% extends "layout.html" %}
+
+{% block title %}List a New Artwork - Artemis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        background-color: #ffffff;
+        padding: 2.5rem 3rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .auth-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: var(--primary-color);
+    }
+    
+    .auth-header p {
+        color: var(--light-text);
+        font-size: 1.1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 1rem;
+        font-family: 'Inter', sans-serif;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+    }
+    
+    .form-row .form-group {
+        flex: 1;
+    }
+    
+    .btn-submit {
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        border: none;
+        border-radius: 6px;
+        background: linear-gradient(135deg, var(--secondary-color), #c0392b);
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <header class="auth-header">
+        <h1>List Your Artwork</h1>
+        <p>Fill in the details below to put your item up for auction.</p>
+    </header>
+    
+    <form method="POST" action="{{ url_for('sell_item') }}">
+        <div class="form-group">
+            <label for="title">Artwork Title</label>
+            <input type="text" id="title" name="title" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="artist_name">Artist's Name</label>
+            <input type="text" id="artist_name" name="artist_name" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="4"></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="year">Year Created</label>
+                <input type="number" id="year" name="year" class="form-control" placeholder="e.g. 1503">
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" class="form-control" placeholder="e.g. Portrait, Landscape">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="image_url">Image URL</label>
+            <input type="url" id="image_url" name="image_url" class="form-control" 
+                   placeholder="https://example.com/image.jpg" required>
+            <small style="color: var(--light-text); display: block; margin-top: 0.5rem;">
+                Enter a URL to an online image (e.g., from Imgur, Unsplash, etc.)
+            </small>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-gavel"></i> List for Auction
+        </button>
+    </form>
+</div>
+{% endblock %}

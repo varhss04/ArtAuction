@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+
+{% block title %}Active Auctions - Artemis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auctions-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .auction-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        transition: transform 0.3s;
+    }
+
+    .auction-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .auction-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .auction-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        color: var(--light-text);
+    }
+
+    .btn {
+        display: inline-block;
+        background: var(--accent-color);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+    }
+
+    .no-auctions {
+        text-align: center;
+        padding: 4rem;
+        color: var(--light-text);
+    }
+
+    .no-auctions i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: var(--border-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auctions-container">
+    <h1 class="page-header">Active Auctions</h1>
+
+    {% if auctions %}
+        {% for auction in auctions %}
+        <div class="auction-card">
+            <h3>{{ auction.name }}</h3>
+            <div class="auction-info">
+                <span><i class="fas fa-palette"></i> {{ auction.lot_count }} lots</span>
+                <span><i class="fas fa-calendar"></i> Ends: {{ auction.end_date.strftime('%B %d, %Y') if auction.end_date else 'TBA' }}</span>
+            </div>
+            <a href="{{ url_for('auction_details', auction_id=auction.id) }}" class="btn">
+                <i class="fas fa-gavel"></i> View & Bid
+            </a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-auctions">
+            <i class="fas fa-gavel"></i>
+            <h2>No Active Auctions</h2>
+            <p>Check back soon for new auctions!</p>
+        </div>
+    {% endif %}
+
+    {% if competitive_lots %}
+    <h2 style="text-align: center; margin-top: 3rem;">Most Competitive Lots</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+        {% for lot in competitive_lots %}
+        <div class="auction-card">
+            <img src="{{ url_for('static', filename=lot.image_url) }}" alt="{{ lot.title }}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;" onerror="this.src='https://placehold.co/250x150/ecf0f1/2c3e50?text=Art'">
+            <h3>{{ lot.title }}</h3>
+            <p><strong>Artist:</strong> {{ lot.artist_name }}</p>
+            <p><strong>Auction:</strong> {{ lot.auction_name }}</p>
+            <p><strong>Bids:</strong> {{ lot.total_bids }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
