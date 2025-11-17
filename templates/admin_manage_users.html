@@ -161,6 +161,7 @@
                     <th>Email</th>
                     <th>Role</th>
                     <th>Joined</th>
+                    <th>Last Login</th>
                     <th>Update Role</th>
                 </tr>
             </thead>
@@ -182,6 +183,13 @@
                         </span>
                     </td>
                     <td>{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                    <td>
+                        {% if user.last_login %}
+                            {{ user.last_login.strftime('%b %d, %Y %H:%M') }}
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </td>
                     <td>
                         <form method="POST" action="{{ url_for('admin_update_role', user_id=user.id) }}" class="role-form">
                             <select name="role" class="role-select">

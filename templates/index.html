@@ -168,6 +168,7 @@
     </div>
 </section>
 
+{% if session.user_id %}
 <section class="features">
     <div class="container">
         <h2>Top Sellers</h2>
@@ -186,6 +187,7 @@
         {% endif %}
     </div>
 </section>
+{% endif %}
 
 <section class="cta">
     <h2>Ready to Start Bidding?</h2>

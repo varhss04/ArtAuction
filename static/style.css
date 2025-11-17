@@ -143,6 +143,7 @@ main.container {
     flex: 1;
     padding: 2rem 20px;
     margin-top: 2rem;
+    text-align: center;
 }
 
 /* Enhanced Flash Messages */

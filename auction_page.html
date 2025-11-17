@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>abstracts - Admin - Artemis</title>
+    <meta name="description" content="Premier art auction platform">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-bg: #ecf0f1;
+            --dark-text: #2c3e50;
+            --light-text: #7f8c8d;
+            --border-color: #dfe6e9;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background-color: var(--light-bg);
+        }
+
+        /* Navigation */
+        nav {
+            background: linear-gradient(135deg, var(--primary-color), #34495e);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        /* Flash Messages */
+        .flash-messages {
+            max-width: 1200px;
+            margin: 1rem auto;
+            padding: 0 2rem;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        
+<style>
+    .page-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+
+    .auction-status-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .status-upcoming {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-closed {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-success {
+        background: var(--success-color);
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #229954;
+    }
+
+    .btn-danger {
+        background: var(--danger-color);
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #c0392b;
+    }
+
+    .section {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .section h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+    }
+
+    .artworks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .artwork-card {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .artwork-card:hover {
+        box-shadow: var(--shadow);
+        transform: translateY(-3px);
+    }
+
+    .artwork-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .artwork-info {
+        padding: 1rem;
+    }
+
+    .artwork-info h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+    }
+
+    .artwork-info p {
+        color: var(--light-text);
+        font-size: 0.9rem;
+        margin: 0.25rem 0;
+    }
+
+    .lot-number {
+        display: inline-block;
+        background: var(--primary-color);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+
+    .add-artwork-form {
+        margin-top: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-group select {
+        flex: 1;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+    }
+
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--accent-color);
+    }
+
+    .btn-primary {
+        background: var(--accent-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #2980b9;
+    }
+
+    .no-artworks {
+        text-align: center;
+        padding: 2rem;
+        color: var(--light-text);
+    }
+
+    .no-artworks i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .seller-name {
+        font-size: 0.85rem;
+        color: var(--light-text);
+    }
+</style>
+
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">Artemis</a>
+            <ul class="nav-links">
+                
+                    <li><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="/auctions"><i class="fas fa-gavel"></i> Auctions</a></li>
+                    
+                    
+                    
+                    
+                        <li><a href="/admin/dashboard"><i class="fas fa-cog"></i> Admin</a></li>
+                    
+                    
+                    <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout (admin)</a></li>
+                
+            </ul>
+        </div>
+    </nav>
+
+    
+        
+    
+
+    <main>
+        
+<h1 class="page-header">abstracts</h1>
+
+<div class="auction-status-header">
+    <div>
+        <span class="status-badge status-closed">
+            
+                <i class="fas fa-times-circle"></i> Closed
+            
+        </span>
+    </div>
+    
+    <div class="action-buttons">
+        
+        
+        
+    </div>
+</div>
+
+<div class="section">
+    <h2><i class="fas fa-palette"></i> Assigned Artworks (1)</h2>
+    
+    
+        <div class="artworks-grid">
+            
+            <div class="artwork-card">
+                <img src="/static/https://thevirtualinstructor.com/blog/wp-content/uploads/2013/08/understanding-abstract-art.jpg" 
+                     alt="female samurai warrior" 
+                     class="artwork-image"
+                     onerror="this.src='https://placehold.co/280x200/ecf0f1/2c3e50?text=Art'">
+                <div class="artwork-info">
+                    <h3>female samurai warrior</h3>
+                    <p><i class="fas fa-user"></i> Makoto Shinkai</p>
+                    <span class="lot-number">Lot #101</span>
+                </div>
+            </div>
+            
+        </div>
+    
+</div>
+
+<div class="section">
+    <h2><i class="fas fa-plus-circle"></i> Add Artwork to Auction</h2>
+    
+    
+        <div class="no-artworks">
+            <i class="fas fa-check-circle"></i>
+            <p>No available artworks to add. All artworks have been assigned to auctions.</p>
+        </div>
+    
+</div>
+
+    </main>
+
+    
+    <!-- Know Your Lot Section -->
+    <section style="background: white; padding: 2rem; margin: 2rem auto; max-width: 1200px; border-radius: 12px; box-shadow: var(--shadow);">
+        <h2 style="text-align: center; font-family: 'Playfair Display', serif; color: var(--primary-color); margin-bottom: 2rem;">Know Your Lot</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div>
+                <h3 style="color: var(--secondary-color); margin-bottom: 1rem;"><i class="fas fa-fire"></i> Most Competitive Lots</h3>
+                
+                    
+                        <div style="margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <img src="/static/https://thevirtualinstructor.com/blog/wp-content/uploads/2013/08/understanding-abstract-art.jpg" alt="female samurai warrior" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 0.5rem;" onerror="this.src='https://placehold.co/300x100/ecf0f1/2c3e50?text=Art'">
+                            <strong>female samurai warrior</strong> by Makoto Shinkai<br>
+                            Auction: abstracts<br>
+                            <span style="color: var(--accent-color);">Bids: 2</span>
+                        </div>
+                    
+                        <div style="margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <img src="/static/https://i.pinimg.com/736x/c3/ba/eb/c3baebcf6faec731622589b76ae4d487.jpg" alt="espresso martini" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 0.5rem;" onerror="this.src='https://placehold.co/300x100/ecf0f1/2c3e50?text=Art'">
+                            <strong>espresso martini</strong> by ria adams<br>
+                            Auction: modern galleria<br>
+                            <span style="color: var(--accent-color);">Bids: 2</span>
+                        </div>
+                    
+                        <div style="margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <img src="/static/https://i.pinimg.com/736x/c7/28/98/c72898c26d572a0e6f09a1642b3a95ba.jpg" alt="persian cat" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 0.5rem;" onerror="this.src='https://placehold.co/300x100/ecf0f1/2c3e50?text=Art'">
+                            <strong>persian cat</strong> by unknown<br>
+                            Auction: modern galleria<br>
+                            <span style="color: var(--accent-color);">Bids: 2</span>
+                        </div>
+                    
+                
+            </div>
+            <div>
+                <h3 style="color: var(--secondary-color); margin-bottom: 1rem;"><i class="fas fa-trophy"></i> Top 5 Bidders</h3>
+                
+                    <ol style="padding-left: 1.5rem;">
+                        
+                            <li style="margin-bottom: 0.5rem;"><strong>prats</strong> - 3 bids</li>
+                        
+                            <li style="margin-bottom: 0.5rem;"><strong>dyuthi</strong> - 1 bids</li>
+                        
+                            <li style="margin-bottom: 0.5rem;"><strong>sam</strong> - 1 bids</li>
+                        
+                            <li style="margin-bottom: 0.5rem;"><strong>pooja</strong> - 1 bids</li>
+                        
+                    </ol>
+                
+            </div>
+        </div>
+    </section>
+    
+
+    <footer>
+        <p>&copy; 2025 Artemis Art Auction. All rights reserved.</p>
+    </footer>
+
+    
+</body>
+</html>

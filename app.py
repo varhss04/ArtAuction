@@ -62,6 +62,25 @@ def get_db_connection():
         print(f"!!! ERROR DURING REQUEST: Failed to get connection from pool: {e}")
         return None
 
+# Create default admin user if not exists
+try:
+    conn = get_db_connection()
+    if conn is None: raise Error("Failed to get DB connection")
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT id FROM users WHERE email = 'admin@artgallery.com'")
+    if not cursor.fetchone():
+        # Create default admin
+        admin_id = str(uuid.uuid4())
+        hashed_password = generate_password_hash('admin123')
+        cursor.execute("INSERT INTO users (id, username, email, password_hash, role) VALUES (%s, %s, %s, %s, %s)",
+                       (admin_id, 'admin', 'admin@artgallery.com', hashed_password, 'admin'))
+        conn.commit()
+        print("Default admin user created: admin@artgallery.com / admin123")
+    cursor.close()
+    conn.close()
+except Error as e:
+    print(f"Error creating default admin: {e}")
+
 # --- Context Processor for Global Data ---
 @app.context_processor
 def inject_global_data():
@@ -171,8 +190,8 @@ def register():
             user_id = str(uuid.uuid4())
             hashed_password = generate_password_hash(password)
 
-            args = (user_id, username, email, hashed_password, role)
-            cursor.callproc('RegisterUser', args)
+            cursor.execute("INSERT INTO users (id, username, email, password_hash, role) VALUES (%s, %s, %s, %s, %s)",
+                           (user_id, username, email, hashed_password, role))
             conn.commit()
 
             flash('Registration successful! Please log in.', 'success')
@@ -215,6 +234,12 @@ def login():
                 session['user_id'] = user['id']
                 session['user_role'] = user['role']
                 session['username'] = user['username']
+
+                # Update last login timestamp
+                update_query = "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = %s"
+                cursor.execute(update_query, (user['id'],))
+                conn.commit()
+
                 flash(f"Welcome back, {user['username']}!", 'success')
                 return redirect(url_for('dashboard'))
             else:
@@ -224,8 +249,8 @@ def login():
             flash(f"An error occurred during login: {e.msg}", "danger")
             print(f"!!! DB Error (Login): {e}")
         except ValueError as ve: # Catch the hash error
-             flash(f"Login Error: Could not verify password hash. {ve}", "danger")
-             print(f"!!! Value Error (Login - check_password_hash): {ve}")
+              flash(f"Login Error: Could not verify password hash. {ve}", "danger")
+              print(f"!!! Value Error (Login - check_password_hash): {ve}")
         finally:
             if cursor: cursor.close()
             if conn and conn.is_connected(): conn.close()
@@ -398,8 +423,8 @@ def place_bid():
         cursor = conn.cursor()
         bid_id = str(uuid.uuid4())
 
-        args = (bid_id, amount, lot_id, bidder_id)
-        cursor.callproc('PlaceBid', args)
+        cursor.execute("INSERT INTO bids (id, bid_amount, lot_id, bidder_id) VALUES (%s, %s, %s, %s)",
+                       (bid_id, amount, lot_id, bidder_id))
         conn.commit()
         flash('Bid placed successfully!', 'success')
 
@@ -498,8 +523,18 @@ def sell_item():
             if conn is None: raise Error("Failed to get DB connection")
             cursor = conn.cursor()
 
-            args = (seller_id, title, description, year_int, category, image_url, artist_name)
-            cursor.callproc('CreateArtwork', args)
+            # First, check if artist exists, if not, insert
+            cursor.execute("SELECT id FROM artists WHERE name = %s", (artist_name,))
+            artist = cursor.fetchone()
+            if not artist:
+                artist_id = str(uuid.uuid4())
+                cursor.execute("INSERT INTO artists (id, name) VALUES (%s, %s)", (artist_id, artist_name))
+            else:
+                artist_id = artist['id']
+
+            artwork_id = str(uuid.uuid4())
+            cursor.execute("INSERT INTO artworks (id, seller_id, artist_id, title, description, year, category, image_url) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                           (artwork_id, seller_id, artist_id, title, description, year_int, category, image_url))
             conn.commit()
 
             flash('New artwork listed successfully!', 'success')
@@ -669,7 +704,7 @@ def my_listings():
         listings = cursor.fetchall()
 
         # Get total sales
-        cursor.execute("SELECT SellerTotalSales(%s) AS total_sales", (session['user_id'],))
+        cursor.execute("SELECT SUM(p.amount) AS total_sales FROM payments p JOIN lots l ON p.lot_id = l.id JOIN lot_artworks la ON l.id = la.lot_id JOIN artworks a ON la.artwork_id = a.id WHERE a.seller_id = %s AND p.status = 'completed'", (session['user_id'],))
         result = cursor.fetchone()
         total_sales = result['total_sales'] if result and result['total_sales'] else 0.00
     except Error as e:
@@ -712,7 +747,7 @@ def my_bid_history():
         bids = cursor.fetchall()
 
         # Get bid count
-        cursor.execute("SELECT UserBidCount(%s) AS bid_count", (session['user_id'],))
+        cursor.execute("SELECT COUNT(*) AS bid_count FROM bids WHERE bidder_id = %s", (session['user_id'],))
         result = cursor.fetchone()
         bid_count = result['bid_count'] if result and result['bid_count'] else 0
     except Error as e:
@@ -842,8 +877,9 @@ def admin_manage_auctions():
                 admin_id = session['user_id']
 
                 cursor = conn.cursor()
-                args = (admin_id, name, start_date, end_date, location)
-                cursor.callproc('CreateAuction', args)
+                auction_id = str(uuid.uuid4())
+                cursor.execute("INSERT INTO auctions (id, admin_id, name, start_date, end_date, location, status) VALUES (%s, %s, %s, %s, %s, %s, 'upcoming')",
+                               (auction_id, admin_id, name, start_date, end_date, location))
                 conn.commit()
                 flash(f"Auction '{name}' created.", 'success')
             except Error as e:
@@ -889,7 +925,7 @@ def admin_manage_users():
         if conn is None: raise Error("Failed to get DB connection")
         cursor = conn.cursor(dictionary=True)
         
-        query = "SELECT id, username, email, role, created_at FROM users ORDER BY created_at DESC"
+        query = "SELECT id, username, email, role, created_at, last_login FROM users ORDER BY created_at DESC"
         cursor.execute(query)
         users = cursor.fetchall()
         
@@ -955,8 +991,10 @@ def admin_auction_details(auction_id):
             if artwork_id:
                 try:
                     cursor = conn.cursor()
-                    args = (auction_id, artwork_id)
-                    cursor.callproc('AssignArtworkToLot', args)
+                    lot_id = str(uuid.uuid4())
+                    cursor.execute("INSERT INTO lots (id, auction_id, lot_number, status) VALUES (%s, %s, (SELECT COALESCE(MAX(lot_number), 0) + 1 FROM lots WHERE auction_id = %s), 'active')",
+                                   (lot_id, auction_id, auction_id))
+                    cursor.execute("INSERT INTO lot_artworks (lot_id, artwork_id) VALUES (%s, %s)", (lot_id, artwork_id))
                     conn.commit()
                     flash("Artwork added to auction.", 'success')
                 except Error as e:
@@ -975,11 +1013,15 @@ def admin_auction_details(auction_id):
             flash("Auction not found.", "danger")
             return redirect(url_for('admin_manage_auctions'))
 
+        # Get assigned artworks with winner info for closed auctions
         query_assigned = """
-            SELECT ar.id as artwork_id, ar.title, ar.image_url, l.lot_number, art.name as artist_name
+            SELECT ar.id as artwork_id, ar.title, ar.image_url, l.lot_number, art.name as artist_name,
+                   u.username as winner_name, p.amount, p.status as payment_status
             FROM artworks ar JOIN artists art ON ar.artist_id = art.id
             JOIN lot_artworks la ON ar.id = la.artwork_id
             JOIN lots l ON la.lot_id = l.id
+            LEFT JOIN payments p ON l.id = p.lot_id
+            LEFT JOIN users u ON p.bidder_id = u.id
             WHERE l.auction_id = %s ORDER BY l.lot_number ASC
         """
         cursor.execute(query_assigned, (auction_id,))
@@ -1091,9 +1133,11 @@ def admin_assign_to_auction():
         conn = get_db_connection()
         if conn is None: raise Error("Failed to get DB connection")
         cursor = conn.cursor()
-        
-        args = (auction_id, artwork_id)
-        cursor.callproc('AssignArtworkToLot', args)
+
+        lot_id = str(uuid.uuid4())
+        cursor.execute("INSERT INTO lots (id, auction_id, lot_number, status) VALUES (%s, %s, (SELECT COALESCE(MAX(lot_number), 0) + 1 FROM lots WHERE auction_id = %s), 'active')",
+                       (lot_id, auction_id, auction_id))
+        cursor.execute("INSERT INTO lot_artworks (lot_id, artwork_id) VALUES (%s, %s)", (lot_id, artwork_id))
         conn.commit()
         flash('Artwork assigned to auction successfully!', 'success')
         
